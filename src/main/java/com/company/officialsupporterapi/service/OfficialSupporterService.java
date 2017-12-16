@@ -23,6 +23,8 @@ public class OfficialSupporterService {
 
         OfficialSupporter savedOfficialSupporter = supporterRepository.save(officialSupporter);
 
+        associateSupporterCampaignService.associate(savedOfficialSupporter);
+
         return savedOfficialSupporter;
     }
 
