@@ -38,17 +38,26 @@ public class AssociateSupporterCampaignServiceTest {
 
         OfficialSupporter officialSupporter = officialSupporter();
 
-        OfficialSupporterCampaigns officialSupporterCampaigns = new OfficialSupporterCampaigns();
-        officialSupporterCampaigns.setId("1");
-        officialSupporterCampaigns.setCampaigns(new ArrayList<>());
-        officialSupporterCampaigns.setOfficialSupporterId(officialSupporter.getId());
+        OfficialSupporterCampaigns officialSupporterCampaigns = getOfficialSupporterCampaigns(officialSupporter);
 
         Campaign campaign = genericCampaignTeamId("spfc");
 
         when(campaignClient.getCampaignsByTeamId(any())).thenReturn(asList(campaign));
 
         when(officialSupporterCampaignsRepository.findByOfficialSupporterId(any())).thenReturn(Optional.of(officialSupporterCampaigns));
+        when(officialSupporterCampaignsRepository.save(any())).thenReturn(officialSupporterCampaigns);
 
-        associateSupporterCampaignService.associate(officialSupporter);
+        OfficialSupporterCampaigns associate = associateSupporterCampaignService.associate(officialSupporter);
+
+        assertEquals(associate.getOfficialSupporterId(), officialSupporterCampaigns.getOfficialSupporterId());
+        assertEquals(1, associate.getCampaigns().size());
+    }
+
+    private OfficialSupporterCampaigns getOfficialSupporterCampaigns(OfficialSupporter officialSupporter) {
+        OfficialSupporterCampaigns officialSupporterCampaigns = new OfficialSupporterCampaigns();
+        officialSupporterCampaigns.setId("1");
+        officialSupporterCampaigns.setCampaigns(new ArrayList<>());
+        officialSupporterCampaigns.setOfficialSupporterId(officialSupporter.getId());
+        return officialSupporterCampaigns;
     }
 }

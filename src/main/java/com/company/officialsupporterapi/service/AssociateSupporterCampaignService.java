@@ -5,13 +5,21 @@ import com.company.officialsupporterapi.model.Campaign;
 import com.company.officialsupporterapi.model.OfficialSupporter;
 import com.company.officialsupporterapi.model.OfficialSupporterCampaigns;
 import com.company.officialsupporterapi.repository.OfficialSupporterCampaignsRepository;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class AssociateSupporterCampaignService {
@@ -24,15 +32,28 @@ public class AssociateSupporterCampaignService {
     @Autowired
     private OfficialSupporterCampaignsRepository officialSupporterCampaignsRepository;
 
-    public void associate(OfficialSupporter officialSupporter) {
+    public OfficialSupporterCampaigns associate(OfficialSupporter officialSupporter) {
 
         List<Campaign> campaigns = campaignClient.getCampaignsByTeamId(officialSupporter.getTeamId());
 
-        Optional<OfficialSupporterCampaigns> officialSupporterCampaigns = officialSupporterCampaignsRepository.
+        Optional<OfficialSupporterCampaigns> optOfficialSupporterCampaigns = officialSupporterCampaignsRepository.
                 findByOfficialSupporterId(officialSupporter.getId());
 
-        log.info("#############");
-        log.info("{}", officialSupporterCampaigns);
-        log.info("{}", campaigns);
+        OfficialSupporterCampaigns osc = optOfficialSupporterCampaigns.orElseGet(() -> {
+            OfficialSupporterCampaigns newSupporterCampaign = new OfficialSupporterCampaigns();
+            newSupporterCampaign.setOfficialSupporterId(officialSupporter.getId());
+            newSupporterCampaign.setCampaigns(newArrayList());
+            return newSupporterCampaign;
+        });
+
+        List<String> ids = campaigns.stream().map(campaign -> campaign.getId()).collect(toList());
+
+        HashSet<String> campaignsToAdd = new HashSet<>();
+        campaignsToAdd.addAll(osc.getCampaigns());
+        campaignsToAdd.addAll(ids);
+        osc.setCampaigns(newArrayList(campaignsToAdd));
+
+        return officialSupporterCampaignsRepository.save(osc);
+
     }
 }

@@ -1,7 +1,9 @@
 package com.company.officialsupporterapi.controller;
 
 import com.company.officialsupporterapi.exception.OfficialSupporterAlreadyExistsException;
+import com.company.officialsupporterapi.exception.OfficialSupporterNotFoundException;
 import com.company.officialsupporterapi.model.OfficialSupporter;
+import com.company.officialsupporterapi.model.OfficialSupporterCampaigns;
 import com.company.officialsupporterapi.repository.OfficialSupporterRepository;
 import com.company.officialsupporterapi.service.AssociateSupporterCampaignService;
 import com.company.officialsupporterapi.service.OfficialSupporterService;
@@ -35,11 +37,12 @@ public class OfficialSupporterController {
     }
 
     @RequestMapping(method = POST, path = "/{officialSupporterId}/associate")
-    public void associate(@PathVariable("officialSupporterId") String officialSupporterId) {
+    public OfficialSupporterCampaigns associate(@PathVariable("officialSupporterId") String officialSupporterId) {
         Optional<OfficialSupporter> supporter = supporterRepository.findById(officialSupporterId);
-        supporter.ifPresent(s -> {
-            associateSupporterCampaignService.associate(s);
-        });
+
+        OfficialSupporter officialSupporter = supporter.orElseThrow(OfficialSupporterNotFoundException::new);
+
+        return associateSupporterCampaignService.associate(officialSupporter);
     }
 
 }
