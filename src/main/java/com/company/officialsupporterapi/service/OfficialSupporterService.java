@@ -23,8 +23,6 @@ public class OfficialSupporterService {
 
     public OfficialSupporter save(OfficialSupporter officialSupporter) {
 
-        associateSupporterCampaignService.getCampaigns();
-
         checkConflict(officialSupporter);
 
         OfficialSupporter savedOfficialSupporter = supporterRepository.save(officialSupporter);

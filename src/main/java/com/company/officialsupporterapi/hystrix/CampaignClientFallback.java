@@ -4,7 +4,6 @@ import com.company.officialsupporterapi.feign.CampaignClient;
 import com.company.officialsupporterapi.model.Campaign;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
@@ -13,7 +12,7 @@ import static java.util.Collections.emptyList;
 public class CampaignClientFallback implements CampaignClient {
 
     @Override
-    public List<Campaign> getCampaigns() {
+    public List<Campaign> getCampaignsByTeamId(String itemId) {
         return emptyList();
     }
 
