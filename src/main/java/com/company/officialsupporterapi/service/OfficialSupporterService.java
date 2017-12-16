@@ -5,12 +5,8 @@ import com.company.officialsupporterapi.model.OfficialSupporter;
 import com.company.officialsupporterapi.repository.OfficialSupporterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 public class OfficialSupporterService {
