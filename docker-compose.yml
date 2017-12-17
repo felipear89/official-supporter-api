@@ -1,15 +1,56 @@
 version: '3'
 
 services:
-  db:
+  promotion-api:
+    image: felipear89/promotion-api:latest
+    ports:
+      - "8081:8081"
+    environment:
+      - SERVER_PORT=8081
+      - DATASOURCE_URL=jdbc:mysql://mysql:3306/company-db?useSSL=false
+      - RABBITMQ_HOST=rabbitmq
+      - REDIS_HOST=redis
+    depends_on:
+      - mysql
+      - rabbitmq
+      - redis
+
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - db_mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: company-db
+      MYSQL_USER: promotion-api
+      MYSQL_PASSWORD: 123456
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    hostname: my-rabbit
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+  mongo:
     image: mongo:3.0.15
     volumes:
-      - db_data:/data/db
+      - db_mongo_data:/data/db
     ports:
       - "27017:27017"
     container_name: "mongodb"
     environment:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
+
 volumes:
-    db_data:
+    db_mongo_data:
+    db_mysql_data:
