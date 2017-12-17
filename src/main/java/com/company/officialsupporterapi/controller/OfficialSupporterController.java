@@ -4,6 +4,7 @@ import com.company.officialsupporterapi.exception.OfficialSupporterAlreadyExists
 import com.company.officialsupporterapi.exception.OfficialSupporterNotFoundException;
 import com.company.officialsupporterapi.model.OfficialSupporter;
 import com.company.officialsupporterapi.model.OfficialSupporterCampaigns;
+import com.company.officialsupporterapi.repository.OfficialSupporterCampaignsRepository;
 import com.company.officialsupporterapi.repository.OfficialSupporterRepository;
 import com.company.officialsupporterapi.service.AssociateSupporterCampaignService;
 import com.company.officialsupporterapi.service.OfficialSupporterService;
@@ -12,9 +13,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -30,10 +33,23 @@ public class OfficialSupporterController {
     @Autowired
     private AssociateSupporterCampaignService associateSupporterCampaignService;
 
+    @Autowired
+    private OfficialSupporterCampaignsRepository officialSupporterCampaignsRepository;
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OfficialSupporter create(@Valid @RequestBody OfficialSupporter officialSupporter) throws OfficialSupporterAlreadyExistsException {
         return officialSupporterService.save(officialSupporter);
+    }
+
+    @GetMapping("/{id}")
+    public OfficialSupporter show(@PathVariable String id) {
+        return supporterRepository.findById(id).orElseThrow(OfficialSupporterNotFoundException::new);
+    }
+
+    @GetMapping
+    public List<OfficialSupporter> list() {
+        return supporterRepository.findAll();
     }
 
     @RequestMapping(method = POST, path = "/{officialSupporterId}/associate")
@@ -43,6 +59,12 @@ public class OfficialSupporterController {
         OfficialSupporter officialSupporter = supporter.orElseThrow(OfficialSupporterNotFoundException::new);
 
         return associateSupporterCampaignService.associate(officialSupporter);
+    }
+
+    @RequestMapping(method = GET, path = "/{officialSupporterId}/associate")
+    public OfficialSupporterCampaigns getAssociate(@PathVariable("officialSupporterId") String officialSupporterId) {
+        return officialSupporterCampaignsRepository.findByOfficialSupporterId(officialSupporterId)
+                .orElseThrow(OfficialSupporterNotFoundException::new);
     }
 
 }
