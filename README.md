@@ -53,4 +53,20 @@ curl -X GET http://localhost:8080/officialSupporters/{id}/associate
 ```
 curl -X GET http://localhost:8080/officialSupporters
  ```
- 
+ ## Campaign API
+The Campaign API is running on port 8081
+This is an example of how to insert 
+ ```
+ ### Insert
+```
+curl -X POST \
+  http://localhost:8081/campaigns \
+  -H 'content-type: application/json' \
+  -d '{
+	"name": "Happy Campaign",
+	"teamId": "chapeco",
+	"start": "2017-01-01",
+	"end": "2018-01-01"
+}'
+```
+```
